@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐾 IoT Peet Feeder - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        header {
+            padding: 40px 0;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .logo {
+            font-size: 5rem;
+            margin: 20px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .dashboard {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        .status-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+        .status-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .status-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .feeder-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .feeder-item {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        footer {
+            margin-top: 50px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <header>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+            <div class="logo"></div>
+            <h1>IoT Peet Feeder PRO</h1>
+            <p>Dashboard intelligent </p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="status-grid">
+                <div class="status-card">
+                    <h3> Connectées</h3>
+                    <div class="status-value" id="connected">3</div>
+                    <p>Nourriture en ligne</p>
+                </div>
+                <div class="status-card">
+                    <h3> Nourriture</h3>
+                    <div class="status-value" id="foodLevel">78%</div>
+                    <p>Niveau moyen</p>
+                </div>
+                <div class="status-card">
+                    <h3> Distributions</h3>
+                    <div class="status-value" id="feeds">12</div>
+                    <p>Aujourd'hui</p>
+                </div>
+                <div class="status-card">
+                    <h3> Animaux</h3>
+                    <div class="status-value" id="pets">4</div>
+                    <p>Heureux et nourris</p>
+                </div>
+            </div>
+            
+            <div class="feeder-list" id="feedersList">
+                <!-- Les mangeoires seront chargées ici -->
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <button onclick="addFeeder()">
+                    <span style="font-size: 1.5rem; margin-right: 10px;">+</span>
+                    Ajouter une mangeoire
+                </button>
+                <button onclick="refreshData()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52);">
+                     Actualiser
+                </button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Serveur IoT Peet Feeder | Port 8000 | Dashboard v2.0</p>
+            <p>Interface développée avec  pour vos animaux</p>
+        </footer>
+    </div>
+    
+    <script>
+        
+        const feeders = [
+            { id: 1, name: "Mangeoire Salon", status: "online", food: 85, lastFeed: "08:30" },
+            { id: 2, name: "Mangeoire Cuisine", status: "online", food: 45, lastFeed: "07:45" },
+            { id: 3, name: "Mangeoire Bureau", status: "offline", food: 20, lastFeed: "Hier" }
+        ];
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFeeders();
+            updateStats();
+            
+            
+            setInterval(updateRealTime, 5000);
+        });
+        
+        
+        function renderFeeders() {
+            const container = document.getElementById('feedersList');
+            container.innerHTML = '';
+            
+            feeders.forEach(feeder => {
+                const card = document.createElement('div');
+                card.className = 'feeder-item';
+                card.innerHTML = `
+                    <h3>${feeder.name}</h3>
+                    <div style="display: flex; justify-content: space-between; margin: 15px 0;">
+                        <span>Statut: <strong style="color: ${feeder.status === 'online' ? '#00d2ff' : '#ff6b6b'}">
+                            ${feeder.status === 'online' ? ' En ligne' : ' Hors ligne'}
+                        </strong></span>
+                        <span>Nourriture: <strong>${feeder.food}%</strong></span>
+                    </div>
+                    <div style="height: 10px; background: #eee; border-radius: 5px; overflow: hidden;">
+                        <div style="height: 100%; width: ${feeder.food}%; background: linear-gradient(90deg, #00d2ff, #3a7bd5);"></div>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        Dernière distribution: ${feeder.lastFeed}
+                    </p>
+                    <button onclick="feedNow(${feeder.id})" style="width: 100%; margin-top: 15px; padding: 10px;"
+                        ${feeder.status !== 'online' ? 'disabled style="opacity: 0.5;"' : ''}>
+                         Nourrir maintenant
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        
+        function updateStats() {
+            const connected = feeders.filter(f => f.status === 'online').length;
+            const avgFood = Math.round(feeders.reduce((sum, f) => sum + f.food, 0) / feeders.length);
+            
+            document.getElementById('connected').textContent = connected;
+            document.getElementById('foodLevel').textContent = avgFood + '%';
+            document.getElementById('feeds').textContent = Math.floor(Math.random() * 5) + 10;
+        }
+        
+
+        function feedNow(id) {
+            const feeder = feeders.find(f => f.id === id);
+            if (feeder && feeder.status === 'online') {
+                feeder.food = Math.max(0, feeder.food - 15);
+                feeder.lastFeed = new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
+                alert(` ${feeder.name} a distribué 15g de nourriture !`);
+                renderFeeders();
+                updateStats();
+            }
+        }
+        
+        
+        function addFeeder() {
+            const name = prompt("Nom de la nouvelle mangeoire:");
+            if (name) {
+                feeders.push({
+                    id: feeders.length + 1,
+                    name: name,
+                    status: 'online',
+                    food: 100,
+                    lastFeed: 'Jamais'
+                });
+                renderFeeders();
+                updateStats();
+                alert(` ${name} ajoutée avec succès !`);
+            }
+        }
+        
+        
+        function refreshData() {
+            alert(" Synchronisation avec les appareils...");
+            feeders.forEach(f => {
+                if (f.status === 'online' && f.food < 100) {
+                    f.food = Math.min(100, f.food + Math.random() * 5);
+                }
+            });
+            renderFeeders();
+            updateStats();
+        }
+        
+        
+        function updateRealTime() {
+            feeders.forEach(feeder => {
+                if (feeder.status === 'online' && Math.random() > 0.7) {
+                    feeder.food = Math.max(0, feeder.food - 0.5);
+                }
+            });
+            renderFeeders();
+            updateStats();
+        }
+    </script>
+</body>
+</html>
