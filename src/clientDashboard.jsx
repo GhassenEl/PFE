@@ -25,7 +25,7 @@ const ClientDashboard = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                        🐕 Bonjour, Mohamed!
+                         Bonjour, Mohamed!
                     </h1>
                     <p className="text-gray-600 mt-2">
                         Gérez la nutrition de vos compagnons

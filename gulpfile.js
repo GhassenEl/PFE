@@ -24,7 +24,7 @@ gulp.task("licenses", async function () {
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-*/`)
+*/`),
     )
     .pipe(gulp.dest("./", { overwrite: true }));
 
@@ -50,7 +50,7 @@ gulp.task("licenses", async function () {
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
--->`)
+-->`),
     )
     .pipe(gulp.dest("./", { overwrite: true }));
 
@@ -76,7 +76,7 @@ gulp.task("licenses", async function () {
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-*/`)
+*/`),
     )
     .pipe(gulp.dest("./", { overwrite: true }));
   return;
